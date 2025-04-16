@@ -83,10 +83,6 @@ node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
 - `src/lib` - Utility functions and configurations
 - `prisma` - Database schema and migrations
 
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
 ## License
 
 This project is licensed under the MIT License. 

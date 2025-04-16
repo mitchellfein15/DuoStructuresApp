@@ -1,0 +1,16 @@
+More short term:
+- Day streak
+- Add more lessons for each section
+- animations for correct and incorrect answers
+    - sound effect for correct/incorrect
+- merge practice and lessons tab
+
+More long term:
+- Visualization for algorithms
+- interactive diagram for data structures
+- code snippet questions/ code completion questions
+- "order the steps" questions for algorithms
+- implement email?
+- common mistakes/ previous mistakes stored in data base per user
+- maybe make and add video explainations
+- 
