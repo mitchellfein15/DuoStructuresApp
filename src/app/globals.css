@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-rgb: 255, 255, 255;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-rgb));
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary text-white px-6 py-2 rounded-full font-bold hover:bg-opacity-90 transition-all;
+  }
+  
+  .btn-secondary {
+    @apply bg-secondary text-white px-6 py-2 rounded-full font-bold hover:bg-opacity-90 transition-all;
+  }
+  
+  .card {
+    @apply bg-white rounded-xl shadow-lg p-6;
+  }
+} 
