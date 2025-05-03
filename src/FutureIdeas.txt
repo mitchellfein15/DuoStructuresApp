@@ -13,4 +13,4 @@ More long term:
 - implement email?
 - common mistakes/ previous mistakes stored in data base per user
 - maybe make and add video explainations
-- 
+- improve overall animations
