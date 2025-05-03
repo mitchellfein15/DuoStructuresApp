@@ -18,6 +18,8 @@ model User {
   image         String?
   password      String?
   xp            Int       @default(0)
+  streakCount   Int       @default(0)
+  lastStreakDate DateTime?
   accounts      Account[]
   sessions      Session[]
   progress      Progress[]

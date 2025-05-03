@@ -82,7 +82,14 @@ export default function ProfilePage() {
             </div>
             <div className="bg-blue-50 rounded-lg p-4">
               <h3 className="text-lg font-semibold text-blue-900 mb-2">Current Streak</h3>
-              <p className="text-3xl font-bold text-blue-600">0 days</p>
+              <div className="flex items-center space-x-2">
+                <p className="text-3xl font-bold text-blue-600">
+                  {session?.user?.streakCount || 0} day(s)
+                </p>
+                {session?.user?.streakCount && session.user.streakCount > 0 && (
+                  <span className="text-2xl">🔥</span>
+                )}
+              </div>
             </div>
             <div className="bg-blue-50 rounded-lg p-4">
               <h3 className="text-lg font-semibold text-blue-900 mb-2">Total XP</h3>

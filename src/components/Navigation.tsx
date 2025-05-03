@@ -38,6 +38,9 @@ export default function Navigation() {
               <div className="flex items-center space-x-4">
                 <span className="text-gray-700">
                   Welcome, {session.user?.name?.split(' ')[0]}
+                  {session.user?.streakCount !== undefined && session.user.streakCount > 0 && (
+                    <span className="ml-2 text-orange-500">🔥 {session.user.streakCount} day streak</span>
+                  )}
                 </span>
                 <button
                   onClick={() => signOut()}

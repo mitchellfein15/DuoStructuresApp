@@ -137,7 +137,8 @@ export default function LessonViewNew({ topicId, lessonId }: LessonViewProps) {
       setLessonCompleted(true);
       
       try {
-        const response = await fetch("/api/user/xp", {
+        // Update XP
+        const xpResponse = await fetch("/api/user/xp", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -145,11 +146,23 @@ export default function LessonViewNew({ topicId, lessonId }: LessonViewProps) {
           body: JSON.stringify({ xp: xpEarned }),
         });
 
-        if (!response.ok) {
-          throw new Error(`Failed to update XP: ${response.status} ${response.statusText}`);
+        if (!xpResponse.ok) {
+          throw new Error(`Failed to update XP: ${xpResponse.status} ${xpResponse.statusText}`);
+        }
+
+        // Update streak
+        const streakResponse = await fetch("/api/user/streak", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!streakResponse.ok) {
+          console.error("Failed to update streak:", await streakResponse.text());
         }
       } catch (error) {
-        console.error("Error updating XP:", error);
+        console.error("Error updating progress:", error);
         setShowXpNotification(false);
       }
     }
