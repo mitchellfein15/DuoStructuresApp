@@ -5,11 +5,13 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function ProfilePage() {
-  const { data: session, status } = useSession();
+  const { data: session, status, update: updateSession } = useSession();
   const router = useRouter();
   const [xp, setXp] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [lastUpdateTime, setLastUpdateTime] = useState(0);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -18,30 +20,52 @@ export default function ProfilePage() {
   }, [status, router]);
 
   useEffect(() => {
-    async function fetchXp() {
-      if (status === "authenticated") {
+    async function fetchUserData() {
+      if (status === "authenticated" && !isUpdating && Date.now() - lastUpdateTime > 5000) {
         try {
-          console.log("Fetching XP for user:", session?.user?.id);
-          const response = await fetch("/api/user/xp");
-          if (!response.ok) {
-            const errorData = await response.json();
-            console.error("Failed to fetch XP:", errorData);
-            throw new Error(`Failed to fetch XP: ${response.status} ${response.statusText}`);
+          setIsUpdating(true);
+          console.log("Fetching user data for:", session?.user?.id);
+          
+          const [xpResponse, streakResponse] = await Promise.all([
+            fetch("/api/user/xp"),
+            fetch("/api/user/streak")
+          ]);
+
+          if (!xpResponse.ok || !streakResponse.ok) {
+            throw new Error("Failed to fetch user data");
           }
-          const data = await response.json();
-          console.log("XP fetched successfully:", data);
-          setXp(data.xp);
+
+          const xpData = await xpResponse.json();
+          const streakData = await streakResponse.json();
+          
+          setXp(xpData.xp);
+          setLastUpdateTime(Date.now());
+          
+          // Only update session if the data has changed
+          if (session?.user?.xp !== xpData.xp || 
+              session?.user?.streakCount !== streakData.streakCount) {
+            await updateSession({
+              ...session,
+              user: {
+                ...session?.user,
+                xp: xpData.xp,
+                streakCount: streakData.streakCount,
+                lastStreakDate: streakData.lastStreakDate,
+              },
+            });
+          }
         } catch (error) {
-          console.error("Error fetching XP:", error);
-          setError("Failed to load XP");
+          console.error("Error fetching user data:", error);
+          setError(error instanceof Error ? error.message : "Failed to load user data");
         } finally {
           setIsLoading(false);
+          setIsUpdating(false);
         }
       }
     }
 
-    fetchXp();
-  }, [status, session?.user?.id]);
+    fetchUserData();
+  }, [status, session?.user?.id, updateSession, lastUpdateTime]);
 
   if (status === "loading" || isLoading) {
     return (

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { topics, Topic, Lesson } from '@/data/lessons';
 import Link from 'next/link';
+import { useSession } from "next-auth/react";
 
 // TEST LOG - This should appear in console when component loads
 console.log("TEST: New LessonView component loaded!");
@@ -20,6 +21,7 @@ interface LessonViewProps {
 }
 
 export default function LessonViewNew({ topicId, lessonId }: LessonViewProps) {
+  const { data: session, update: updateSession } = useSession();
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
@@ -161,6 +163,16 @@ export default function LessonViewNew({ topicId, lessonId }: LessonViewProps) {
         if (!streakResponse.ok) {
           console.error("Failed to update streak:", await streakResponse.text());
         }
+
+        // Force a refresh of the session data
+        await updateSession({
+          ...session,
+          user: {
+            ...session?.user,
+            xp: (session?.user?.xp || 0) + xpEarned,
+            streakCount: (await streakResponse.json()).streakCount,
+          },
+        });
       } catch (error) {
         console.error("Error updating progress:", error);
         setShowXpNotification(false);

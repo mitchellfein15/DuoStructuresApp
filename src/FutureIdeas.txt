@@ -1,9 +1,10 @@
 More short term:
-- Day streak
+- problems in route.ts
+- streak isn't being shown/updated at top of screen or in profile page
+
 - Add more lessons for each section
 - animations for correct and incorrect answers
     - sound effect for correct/incorrect
-- merge practice and lessons tab
 
 More long term:
 - Visualization for algorithms

@@ -1,15 +1,16 @@
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { authOptions } from "../../auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 
 export async function GET() {
   try {
+    console.log("Starting XP GET request");
     const session = await getServerSession(authOptions);
-    console.log("GET XP - Session:", session);
+    console.log("Session:", session);
 
     if (!session?.user?.id) {
-      console.log("GET XP - Unauthorized: No session or user ID");
+      console.log("No session or user ID found");
       return NextResponse.json(
         { message: "Unauthorized" },
         { status: 401 }
@@ -25,10 +26,10 @@ export async function GET() {
       },
     });
 
-    console.log("GET XP - User found:", user);
+    console.log("User found:", user);
 
     if (!user) {
-      console.log("GET XP - User not found");
+      console.log("User not found");
       return NextResponse.json(
         { message: "User not found" },
         { status: 404 }
@@ -37,7 +38,7 @@ export async function GET() {
 
     return NextResponse.json({ xp: user.xp });
   } catch (error) {
-    console.error("GET XP - Error:", error);
+    console.error("Error in XP GET:", error);
     return NextResponse.json(
       { message: "Something went wrong" },
       { status: 500 }
@@ -47,11 +48,12 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
+    console.log("Starting XP POST request");
     const session = await getServerSession(authOptions);
-    console.log("POST XP - Session:", session);
+    console.log("Session:", session);
 
     if (!session?.user?.id) {
-      console.log("POST XP - Unauthorized: No session or user ID");
+      console.log("No session or user ID found");
       return NextResponse.json(
         { message: "Unauthorized" },
         { status: 401 }
@@ -59,17 +61,17 @@ export async function POST(req: Request) {
     }
 
     const { xp } = await req.json();
-    console.log("POST XP - Request body:", { xp });
+    console.log("Request body:", { xp });
 
     if (typeof xp !== "number") {
-      console.log("POST XP - Invalid XP value");
+      console.log("Invalid XP value");
       return NextResponse.json(
         { message: "Invalid XP value" },
         { status: 400 }
       );
     }
 
-    const user = await prisma.user.update({
+    const updatedUser = await prisma.user.update({
       where: {
         id: session.user.id,
       },
@@ -80,11 +82,22 @@ export async function POST(req: Request) {
       },
     });
 
-    console.log("POST XP - User updated:", user);
+    // Fetch the updated user data
+    const user = await prisma.user.findUnique({
+      where: {
+        id: session.user.id,
+      },
+    });
 
-    return NextResponse.json({ xp: user.xp });
+    console.log("User updated:", user);
+
+    return NextResponse.json({
+      xp: user?.xp,
+      streakCount: user?.streakCount,
+      lastStreakDate: user?.lastStreakDate,
+    });
   } catch (error) {
-    console.error("POST XP - Error:", error);
+    console.error("Error in XP POST:", error);
     return NextResponse.json(
       { message: "Something went wrong" },
       { status: 500 }
