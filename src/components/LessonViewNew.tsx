@@ -90,9 +90,6 @@ export default function LessonViewNew({ topicId, lessonId }: LessonViewProps) {
   };
 
   const handleNextQuestion = async () => {
-    setSelectedAnswer(null);
-    setShowExplanation(false);
-    
     // If this was the last question, award XP and complete the lesson
     if (questionsAnswered >= 5) {
       await awardXp();
@@ -100,6 +97,8 @@ export default function LessonViewNew({ topicId, lessonId }: LessonViewProps) {
       return;
     }
 
+    setSelectedAnswer(null);
+    setShowExplanation(false);
     setIsLoading(true);
     
     try {
